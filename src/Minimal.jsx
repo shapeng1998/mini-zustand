@@ -1,17 +1,16 @@
 // import { useSyncExternalStore } from 'react'
-import { useEffect, useState } from 'react'
+import { useSyncExternalStore } from './use-sync-external-store-shim'
 import { createStore } from './store'
 
-function useSyncExternalStore(subscribe, getSnapshot) {
-  const [state, setState] = useState(() => getSnapshot())
-  useEffect(() => {
-    const handleStoreChange = () => setState(getSnapshot())
-    const unsubscribe = subscribe(handleStoreChange)
-    handleStoreChange()
-    return unsubscribe
-  }, [subscribe, getSnapshot])
-  return [state]
-}
+// function useSyncExternalStore(subscribe, getSnapshot) {
+//   const [state, setState] = useState(() => getSnapshot())
+//   useEffect(() => {
+//     const handleStoreChange = () => setState(getSnapshot())
+//     handleStoreChange()
+//     return subscribe(handleStoreChange)
+//   }, [subscribe, getSnapshot])
+//   return [state]
+// }
 
 const useAtom = (atom) => [
   useSyncExternalStore(atom.subscribe, atom.getState),
