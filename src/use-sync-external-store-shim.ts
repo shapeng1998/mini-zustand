@@ -48,3 +48,26 @@ function checkIfSnapshotChanged<Snapshot>(inst: {
     return true
   }
 }
+
+export const createStore = <T>(initialState: T) => {
+  let state = initialState
+  const listeners = new Set<() => void>()
+  const getState = () => state
+  const setState = (fn: (prevState: T) => T) => {
+    state = fn(state)
+    listeners.forEach((l) => l())
+  }
+  const subscribe = (listener: () => void) => {
+    listeners.add(listener)
+    return () => {
+      listeners.delete(listener)
+    }
+  }
+  return { getState, setState, subscribe }
+}
+
+export const useStore = <T>(store: ReturnType<typeof createStore<T>>) =>
+  [
+    useSyncExternalStore(store.subscribe, store.getState),
+    store.setState,
+  ] as const
